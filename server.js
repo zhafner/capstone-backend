@@ -1,7 +1,7 @@
 const express = require("express");
 const server = express();
 const cors = require("cors");
-server.use(cors({credentials: true, origin: "http://localhost:3000" }));
+server.use(cors({credentials: true, origin: ["http://localhost:3000", "https://zhafner-capstone-frontend.herokuapp.com"] }));
 const bodyParser = require("body-parser");
 server.use(bodyParser.json());
 const bcrypt = require("bcrypt");

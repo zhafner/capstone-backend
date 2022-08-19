@@ -19,6 +19,12 @@ server.use (
     })
 );
 
+let port = process.env.PORT;
+if (!port) {
+    port = 3001;
+}
+
+
 server.get("/", (req, res)=>{
     res.send({hello: "world"});
 });
@@ -69,7 +75,7 @@ server.post("/newUser", async (req,res)=>{
     }
 })
 
-server.listen(3001, ()=>{
+server.listen(port, ()=>{
     console.log("Server running.");
 });
 

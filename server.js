@@ -79,17 +79,7 @@ server.listen(port, ()=>{
     console.log("Server running.");
 });
 
-const createFirstUser = async () => {
-    const users = await User.findAll();
-    if (users.length === 0) {
-        User.create({
-            username: "TheWatcher",
-            password: bcrypt.hashSync("ThereGoesTheMultiverse", 10),
-        });
-    }
-};
 
-createFirstUser();
 
 // const createNewUser = async () => {
 //     const users = await User.findAll();

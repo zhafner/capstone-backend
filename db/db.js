@@ -1,6 +1,29 @@
 const Sequelize = require("sequelize");
 
-const db = new Sequelize("postgres://zacharyhafner@localhost:5432/users");
+
+let options = {};
+let databaseURL = process.env.DATABASE_URL;
+if (!databaseURL) {
+	// this means we're on localhost!
+	databaseURL = "postgres://zacharyhafner@localhost:5432/users";
+	options = {
+		logging: false,
+	};
+} else {
+	// we're not on localhost
+	options = {
+		logging: false,
+		dialectOptions: {
+			ssl: {
+				require: true,
+				rejectUnauthorized: false
+			}
+		}
+	};
+}
+
+const db = new Sequelize(databaseURL, options);
+
 const User = require("./User")(db);
 
 const connectToDB = async ()=>{

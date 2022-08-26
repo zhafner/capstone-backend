@@ -1,10 +1,14 @@
 const express = require("express");
 const server = express();
 const cors = require("cors");
-server.use(cors({credentials: true, origin: ["http://localhost:3000", "https://zhafner-capstone-frontend.herokuapp.com"] }));
+server.use(cors({credentials: true, origin: "http://localhost:3000" }));
 const bodyParser = require("body-parser");
 server.use(bodyParser.json());
 const bcrypt = require("bcrypt");
+
+const apiKey = require("./sendgridAPIkey");
+const sgMail = require("@sendgrid/mail");
+sgMail.setApiKey(apiKey);
 
 const sessions = require("express-session");
 const { db, User } = require("./db/db.js");
@@ -18,12 +22,6 @@ server.use (
         cookie: {maxAge: oneWeek},
     })
 );
-
-let port = process.env.PORT;
-if (!port) {
-    port = 3001;
-}
-
 
 server.get("/", (req, res)=>{
     res.send({hello: "world"});
@@ -49,6 +47,55 @@ server.post("/login", async (req, res)=>{
     }
 });
 
+server.post("/forgotPassword", async(req,res) => {
+    const user = await User.findOne({ where: { email: req.body.email } });
+    if (user) {
+        const { nanoid } = await import("nanoid");
+
+
+        user.passwordResetToken = nanoid();
+        await user.save();
+
+        const url = process.env.DATABASE_URL
+            ? "https://zhafner-capstone-frontend.herokuapp.com/" //blog-frontend URL
+            : "http://localhost:3000";
+
+        const msg = {
+            to: user.email,
+            from: "zhafner1@gmail.com",
+            subject: "You needed a reset, huh?",
+            html: `Click <a href="${url}/setPassword?token=${user.passwordResetToken}">here</a> to reset your password.`,
+        };
+
+        try {
+            await sgMail.send(msg);
+        } catch (error) {
+            console.error(error);
+
+            if (error.response) {
+                console.error(error.response.body);
+            }
+        }
+        //reset password here
+        res.send({ message: "Password is ready to be reset. Go check your email."});
+    } else {
+    res.send({ error: "You don't have an account to reset a password on." });
+    }
+});
+
+server.post('/setPassword', async (req, res)=> {
+    const user = await User.findOne({where: {passwordResetToken:req.body.token} });
+    if(user){
+        //set the password
+        user.password = bcrypt.hashSync(req.body.password, 10),
+        user.passwordResetToken = null;
+        await user.save();
+        res.send({ success: true });
+    } else {
+        res.send({ error: "You don't have an account to reset a password on."});
+    }
+});
+
 server.get("/loginStatus", (req, res)=> {
     if(req.session.user) {
         res.send({ isLoggedIn: true});
@@ -70,16 +117,27 @@ server.post("/newUser", async (req,res)=>{
         await User.create({
             username: req.body.username,
             password: bcrypt.hashSync(req.body.password, 10),
+            email: req.body.email,
         })
         res.send({success: true, message: "account created"})
     }
 })
 
-server.listen(port, ()=>{
+server.listen(3001, ()=>{
     console.log("Server running.");
 });
 
+const createFirstUser = async () => {
+    const users = await User.findAll();
+    if (users.length === 0) {
+        User.create({
+            username: "TheWatcher",
+            password: bcrypt.hashSync("ThereGoesTheMultiverse", 10),
+        });
+    }
+};
 
+createFirstUser();
 
 // const createNewUser = async () => {
 //     const users = await User.findAll();

@@ -6,7 +6,7 @@ const bodyParser = require("body-parser");
 server.use(bodyParser.json());
 const bcrypt = require("bcrypt");
 
-const apiKey = require("./sendgridAPIkey");
+const apiKey = require("./newsendgridAPIkey");
 const sgMail = require("@sendgrid/mail");
 sgMail.setApiKey(apiKey);
 

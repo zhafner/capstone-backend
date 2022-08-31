@@ -1,2 +1,4 @@
 node_modules
 sendnewgridAPIkey.js
+
+# git rm --cached sendnewgridAPIkey.js

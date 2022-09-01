@@ -2,12 +2,12 @@ const express = require("express");
 const server = express();
 const cors = require("cors");
 //server.use(cors({credentials: true, origin: "http://localhost:3000" }));
-server.use(cors({credentials: true, origin: "https://zhafner-capstone-frontend.herokuapp.com/" }));
+server.use(cors({credentials: true, origin: ["https://zhafner-capstone-frontend.herokuapp.com", "http://localhost:3000"] }));
 const bodyParser = require("body-parser");
 server.use(bodyParser.json());
 const bcrypt = require("bcrypt");
 
-const apiKey = require("./newsendgridAPIkey");
+const apiKey = require("./sendnewgridAPIkey");
 const sgMail = require("@sendgrid/mail");
 sgMail.setApiKey(apiKey);
 
@@ -23,6 +23,8 @@ server.use (
         cookie: {maxAge: oneWeek},
     })
 );
+
+
 
 server.get("/", (req, res)=>{
     res.send({hello: "world"});
@@ -123,6 +125,20 @@ server.post("/newUser", async (req,res)=>{
         res.send({success: true, message: "account created"})
     }
 })
+
+server.get("/search/:query", async (req, res)=>{
+    const search= (await import("./fetch.mjs")).default;
+    res.send({results: await search(req.params.query)})
+})
+
+
+
+server.get("/providers/:id", async (req, res)=>{
+    const providers = (await import("./fetch.mjs")).providers;
+    res.send({results: await providers(req.params.id)})
+})
+
+// make another endpoint to get streaming services using a new function in the fetch.mjs file
 
 server.listen(3001, ()=>{
     console.log("Server running.");

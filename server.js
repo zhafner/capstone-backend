@@ -145,7 +145,7 @@ server.get("/providers/:id", async (req, res)=>{
 
 // make another endpoint to get streaming services using a new function in the fetch.mjs file
 
-server.listen(3001, ()=>{
+server.listen(process.env.PORT || 3001, ()=>{
     console.log("Server running.");
 });
 

@@ -1,7 +1,7 @@
 const Sequelize = require("sequelize");
 
 let databaseURL = process.env.DATABASE_URL;
-
+let options = {};
 // if running database on localhost
 if (!databaseURL) {
     // set databaseURL to the localhost database URL

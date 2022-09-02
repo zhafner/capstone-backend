@@ -1,8 +1,10 @@
 import fetch from "node-fetch";
-import apiKeyImport from "./apiKeyMovies";
 
-let apiKey = process.env.MOVIE_API_KEY || apiKeyImport;
+let apiKey = process.env.MOVIE_API_KEY;
 
+if (!apiKey){
+    const importAPI = (await import("./apiKeyMovies.js")).default;
+}
 
 const search = async (query)=>{
     const response = await fetch(`https://api.themoviedb.org/3/search/movie?query=${query}&api_key=${apiKey}`);

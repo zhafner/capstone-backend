@@ -65,7 +65,7 @@ server.post("/forgotPassword", async(req,res) => {
         await user.save();
 
         const url = process.env.DATABASE_URL
-            ? "https://zhafner-capstone-frontend.herokuapp.com/"
+            ? "https://zhafner-capstone-frontend.herokuapp.com"
             : "http://localhost:3000";
 
         const msg = {

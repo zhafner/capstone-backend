@@ -72,7 +72,7 @@ server.post("/forgotPassword", async(req,res) => {
             to: user.email,
             from: "zhafner1@gmail.com",
             subject: "You needed a reset, huh?",
-            html: `Click <a href="${url}setPassword?token=${user.passwordResetToken}">here</a> to reset your password.`,
+            html: `Click <a href="${url}/setPassword?token=${user.passwordResetToken}">here</a> to reset your password.`,
         };
 
         try {
